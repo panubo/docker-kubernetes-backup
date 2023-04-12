@@ -28,3 +28,6 @@ bash: .env
 
 shellcheck:
 	shellcheck *.sh
+
+_ci_test:
+	true
