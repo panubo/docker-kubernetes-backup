@@ -8,7 +8,7 @@ This image contains the following tools indented to enable easy backup of a kube
 
 ## Example
 
-```
+```bash
 #!/usr/bin/env bash
 
 set -e
