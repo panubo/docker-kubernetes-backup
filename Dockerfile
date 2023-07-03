@@ -1,15 +1,14 @@
-FROM alpine:3.14
+FROM alpine:3.17
 
 # Install system packages, installing a few packages to replace the busybox defaults
 RUN set -x \
   && apk --no-cache add python3 ca-certificates wget bash curl coreutils gzip bzip2 lz4 tar \
-  && ln -s /usr/bin/python3 /usr/bin/python \
   ;
 
 # Install Gcloud SDK (required for gsutil workload identity authentication)
 ENV \
-  GCLOUD_VERSION=331.0.0 \
-  GCLOUD_CHECKSUM=f90c2df5bd0b3498d7e33112f17439eead8c94ae7d60a1cab0091de0eee62c16
+  GCLOUD_VERSION=437.0.1 \
+  GCLOUD_CHECKSUM=ff478c6697361495b8843597563656267eaca9d407a1780717acb882a212b8ff
 
 RUN set -x \
   && curl -o /tmp/google-cloud-sdk-${GCLOUD_VERSION}-linux-x86_64.tar.gz -L https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-${GCLOUD_VERSION}-linux-x86_64.tar.gz \
@@ -27,14 +26,14 @@ ENV \
   PYTHONIOENCODING=UTF-8 \
   PYTHONUNBUFFERED=0 \
   PAGER=more \
-  AWS_CLI_VERSION=1.16.286 \
-  AWS_CLI_CHECKSUM=7e99ea733b3d97b1fa178fab08b5d7802d0647ad514c14221513c03ce920ce83
+  AWS_CLI_VERSION=1.27.165 \
+  AWS_CLI_CHECKSUM=c90a9405382b7bcfca8e795252cf7e04fff56734b6c0aeef179ff8c5a4f2c336
 
 RUN set -x \
   && cd /tmp \
   && wget -nv https://s3.amazonaws.com/aws-cli/awscli-bundle-${AWS_CLI_VERSION}.zip -O /tmp/awscli-bundle-${AWS_CLI_VERSION}.zip \
   && echo "${AWS_CLI_CHECKSUM}  awscli-bundle-${AWS_CLI_VERSION}.zip" > /tmp/SHA256SUM \
-  && sha256sum -c SHA256SUM \
+  && ( cd /tmp; sha256sum -c SHA256SUM || ( echo "Expected $(sha256sum awscli-bundle-${AWS_CLI_VERSION}.zip)"; exit 1; )) \
   && unzip awscli-bundle-${AWS_CLI_VERSION}.zip \
   && /tmp/awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws \
   && rm -rf /tmp/* \
